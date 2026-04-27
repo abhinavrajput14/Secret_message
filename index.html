@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Secret Message</title>
+
 <style>
 body {
   margin: 0;
@@ -15,54 +16,62 @@ body {
   color: white;
 }
 
-/* Card UI */
+/* Bigger Card */
 .card {
-  background: rgba(255,255,255,0.08);
-  padding: 40px;
-  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  padding: 50px;
+  border-radius: 25px;
   text-align: center;
-  backdrop-filter: blur(15px);
-  width: 320px;
+  backdrop-filter: blur(20px);
+  width: 450px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
 
+/* Bigger Inputs */
 input, textarea {
-  width: 90%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 10px;
+  width: 95%;
+  padding: 14px;
+  margin: 12px 0;
+  border-radius: 12px;
   border: none;
+  font-size: 16px;
 }
 
+/* Button */
 button {
-  padding: 10px 20px;
+  padding: 12px 25px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #ff4b5c;
   color: white;
+  font-size: 16px;
   cursor: pointer;
 }
 
-.hidden { display: none; }
-
-/* Message screen */
+/* Message Screen */
 #messageScreen {
-  font-size: 1.5rem;
-  line-height: 1.6;
-  font-family: 'Georgia', serif;
+  font-size: 1.8rem;
+  line-height: 1.8;
+  font-style: italic;
 }
+
+.hidden { display: none; }
 </style>
 </head>
 
 <body>
 
+<!-- LOGIN -->
 <div class="card" id="login">
-  <h2>🔐 Secret Message</h2>
+  <h1>🔐 Secret Message</h1>
   <input type="password" id="password" placeholder="Enter password">
   <button onclick="checkPassword()">Unlock</button>
 </div>
 
+<!-- MESSAGE -->
 <div class="card hidden" id="messageScreen"></div>
 
+<!-- ADMIN -->
 <div class="card hidden" id="adminPanel">
   <h2>⚙️ Admin Panel</h2>
   <textarea id="newMsg" rows="4" placeholder="Enter new message"></textarea>
@@ -70,41 +79,65 @@ button {
   <button onclick="saveData()">Save</button>
 </div>
 
-<script>
-// Default values (change later)
-let userPassword = localStorage.getItem("userPass") || "1234";
-let secretMessage = localStorage.getItem("message") || "You are special ❤️";
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-// Password check
-function checkPassword() {
-  let pass = document.getElementById("password").value;
+const firebaseConfig = {
+  apiKey: "AIzaSyAiC1OJOO6zJ0_xOn9jxqIYc4yMlcJW_UY",
+  authDomain: "secret-message-921ed.firebaseapp.com",
+  projectId: "secret-message-921ed",
+  storageBucket: "secret-message-921ed.firebasestorage.app",
+  messagingSenderId: "338577901246",
+  appId: "1:338577901246:web:784bd09ae18b813c1640ef"
+};
 
-  if (pass === "admin14") {
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("adminPanel").classList.remove("hidden");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// SAVE DATA (ADMIN)
+window.saveData = async function() {
+  const msg = document.getElementById("newMsg").value;
+  const pass = document.getElementById("newPass").value;
+
+  if (!msg || !pass) {
+    alert("Fill both fields!");
+    return;
   }
-  else if (pass === userPassword) {
-    document.getElementById("login").classList.add("hidden");
-    let msgScreen = document.getElementById("messageScreen");
-    msgScreen.classList.remove("hidden");
-    msgScreen.innerHTML = `<div style="font-size:2rem;">"${secretMessage}"</div>`;
-  }
-  else {
-    alert("Wrong Password ❌");
-  }
+
+  await setDoc(doc(db, "secret", "data"), {
+    message: msg,
+    password: pass
+  });
+
+  alert("Updated Successfully 🔥");
 }
 
-// Save new message & password
-function saveData() {
-  let newMsg = document.getElementById("newMsg").value;
-  let newPass = document.getElementById("newPass").value;
+// CHECK PASSWORD
+window.checkPassword = async function() {
+  const input = document.getElementById("password").value;
 
-  if (newMsg && newPass) {
-    localStorage.setItem("message", newMsg);
-    localStorage.setItem("userPass", newPass);
-    alert("Updated Successfully ✅");
+  const snap = await getDoc(doc(db, "secret", "data"));
+
+  if (snap.exists()) {
+    const data = snap.data();
+
+    if (input === "admin14") {
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("adminPanel").classList.remove("hidden");
+    } 
+    else if (input === data.password) {
+      document.getElementById("login").classList.add("hidden");
+      let msgScreen = document.getElementById("messageScreen");
+      msgScreen.classList.remove("hidden");
+      msgScreen.innerHTML = `✨ "${data.message}" ✨`;
+    } 
+    else {
+      alert("Wrong Password ❌");
+    }
   } else {
-    alert("Fill both fields!");
+    alert("No data found! First set message from admin.");
   }
 }
 </script>
