@@ -148,7 +148,7 @@ window.checkPassword = async function() {
       document.getElementById("login").classList.add("hidden");
       let msgScreen = document.getElementById("messageScreen");
       msgScreen.classList.remove("hidden");
-      msgScreen.innerHTML = `✨ "${data.message}" ✨`;
+      typeWriter(`✨ "${data.message}" ✨`, msgScreen);
     } 
     else {
       alert("Wrong Password ❌");
