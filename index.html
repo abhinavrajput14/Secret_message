@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Secret Message</title>
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e1e2f, #2b5876);
+  font-family: 'Georgia', serif;
+  color: white;
+}
+
+/* Card UI */
+.card {
+  background: rgba(255,255,255,0.08);
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  width: 320px;
+}
+
+input, textarea {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #ff4b5c;
+  color: white;
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+/* Message screen */
+#messageScreen {
+  font-size: 1.5rem;
+  line-height: 1.6;
+  font-family: 'Georgia', serif;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="login">
+  <h2>🔐 Secret Message</h2>
+  <input type="password" id="password" placeholder="Enter password">
+  <button onclick="checkPassword()">Unlock</button>
+</div>
+
+<div class="card hidden" id="messageScreen"></div>
+
+<div class="card hidden" id="adminPanel">
+  <h2>⚙️ Admin Panel</h2>
+  <textarea id="newMsg" rows="4" placeholder="Enter new message"></textarea>
+  <input type="text" id="newPass" placeholder="Set new password">
+  <button onclick="saveData()">Save</button>
+</div>
+
+<script>
+// Default values (change later)
+let userPassword = localStorage.getItem("userPass") || "1234";
+let secretMessage = localStorage.getItem("message") || "You are special ❤️";
+
+// Password check
+function checkPassword() {
+  let pass = document.getElementById("password").value;
+
+  if (pass === "admin14") {
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("adminPanel").classList.remove("hidden");
+  }
+  else if (pass === userPassword) {
+    document.getElementById("login").classList.add("hidden");
+    let msgScreen = document.getElementById("messageScreen");
+    msgScreen.classList.remove("hidden");
+    msgScreen.innerHTML = `<div style="font-size:2rem;">"${secretMessage}"</div>`;
+  }
+  else {
+    alert("Wrong Password ❌");
+  }
+}
+
+// Save new message & password
+function saveData() {
+  let newMsg = document.getElementById("newMsg").value;
+  let newPass = document.getElementById("newPass").value;
+
+  if (newMsg && newPass) {
+    localStorage.setItem("message", newMsg);
+    localStorage.setItem("userPass", newPass);
+    alert("Updated Successfully ✅");
+  } else {
+    alert("Fill both fields!");
+  }
+}
+</script>
+
+</body>
+</html>
