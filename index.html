@@ -198,10 +198,11 @@ window.checkPassword = async function() {
       msgScreen.classList.remove("hidden");
 
       // PHOTO + MESSAGE
-      msgScreen.innerHTML = `
-        <img src="a.jpg" class="photo">
-        <div id="typingText"></div>
-      `;
+     msgScreen.innerHTML = `
+  <div id="typingText"></div>
+  <br>
+  <img src="a.jpg" class="photo">
+`;
 
       typeWriter(`✨ "${data.message}" ✨`, document.getElementById("typingText"));
 
