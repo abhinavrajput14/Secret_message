@@ -5,6 +5,7 @@
 <title>Secret Message</title>
 
 <style>
+
 body {
   margin: 0;
   height: 100vh;
@@ -25,6 +26,20 @@ body {
   backdrop-filter: blur(20px);
   width: 450px;
   box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+/* PHOTO */
+.photo {
+  width: 250px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 25px cyan;
+  transition: 0.5s;
+}
+
+.photo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 35px hotpink;
 }
 
 /* Bigger Inputs */
@@ -52,13 +67,15 @@ button {
 #messageScreen {
   font-size: 1.8rem;
   line-height: 1.8;
-
   max-height: 300px;
   overflow-y: auto;
   word-break: break-word;
 }
 
-.hidden { display: none; }
+.hidden {
+  display: none;
+}
+
 </style>
 </head>
 
@@ -66,9 +83,16 @@ button {
 
 <!-- LOGIN -->
 <div class="card" id="login">
+
+  <!-- PHOTO -->
+  <img src="photo.jpg" class="photo">
+
   <h1>🔐 Secret Message</h1>
+
   <input type="password" id="password" placeholder="Enter password">
+
   <button onclick="checkPassword()">Unlock</button>
+
 </div>
 
 <!-- MESSAGE -->
@@ -76,14 +100,23 @@ button {
 
 <!-- ADMIN -->
 <div class="card hidden" id="adminPanel">
+
+  <img src="photo.jpg" class="photo">
+
   <h2>⚙️ Admin Panel</h2>
+
   <textarea id="newMsg" rows="4" placeholder="Enter new message"></textarea>
+
   <input type="text" id="newPass" placeholder="Set new password">
+
   <button onclick="saveData()">Save</button>
+
 </div>
 
 <!-- FIREBASE -->
-<script type="module">function typeWriter(text, element, speed = 40) {
+<script type="module">
+
+function typeWriter(text, element, speed = 40) {
   element.innerHTML = "";
   let i = 0;
 
@@ -97,12 +130,15 @@ button {
 
   typing();
 }
-  
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+import { getFirestore, doc, setDoc, getDoc }
+
+from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAiC1OJOO6zJ0_xOn9jxqIYc4yMlcJW_UY",
+  apiKey: "YOUR_API_KEY",
   authDomain: "secret-message-921ed.firebaseapp.com",
   projectId: "secret-message-921ed",
   storageBucket: "secret-message-921ed.firebasestorage.app",
@@ -111,11 +147,14 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
-// SAVE DATA (ADMIN)
+// SAVE DATA
 window.saveData = async function() {
+
   const msg = document.getElementById("newMsg").value;
+
   const pass = document.getElementById("newPass").value;
 
   if (!msg || !pass) {
@@ -133,30 +172,57 @@ window.saveData = async function() {
 
 // CHECK PASSWORD
 window.checkPassword = async function() {
+
   const input = document.getElementById("password").value;
 
   const snap = await getDoc(doc(db, "secret", "data"));
 
   if (snap.exists()) {
+
     const data = snap.data();
 
     if (input === "admin14") {
+
       document.getElementById("login").classList.add("hidden");
+
       document.getElementById("adminPanel").classList.remove("hidden");
-    } 
-    else if (input === data.password) {
-      document.getElementById("login").classList.add("hidden");
-      let msgScreen = document.getElementById("messageScreen");
-      msgScreen.classList.remove("hidden");
-      typeWriter(`✨ "${data.message}" ✨`, msgScreen);
-    } 
-    else {
-      alert("Wrong Password ❌");
+
     }
-  } else {
-    alert("No data found! First set message from admin.");
+
+    else if (input === data.password) {
+
+      document.getElementById("login").classList.add("hidden");
+
+      let msgScreen = document.getElementById("messageScreen");
+
+      msgScreen.classList.remove("hidden");
+
+      // PHOTO + MESSAGE
+      msgScreen.innerHTML = `
+        <img src="a.jpg" class="photo">
+        <div id="typingText"></div>
+      `;
+
+      typeWriter(`✨ "${data.message}" ✨`, document.getElementById("typingText"));
+
+    }
+
+    else {
+
+      alert("Wrong Password ❌");
+
+    }
+
   }
+
+  else {
+
+    alert("No data found!");
+
+  }
+
 }
+
 </script>
 
 </body>
